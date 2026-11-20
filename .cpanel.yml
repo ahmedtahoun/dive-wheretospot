@@ -1,0 +1,13 @@
+# cPanel Git Version Control deploy for dive.wheretospot.com.
+# The database lives in /home/viorowzb/dive-data (outside the website) and is never touched by a deploy.
+# uploads/ on the server is never overwritten: the repo only holds its .htaccess.
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/viorowzb/dive.wheretospot.com/
+    - /bin/mkdir -p $DEPLOYPATH /home/viorowzb/dive-data
+    - /bin/cp index.php $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH/.htaccess
+    - /bin/cp -R app assets $DEPLOYPATH
+    - /bin/cp app/.htaccess $DEPLOYPATH/app/.htaccess
+    - /bin/mkdir -p $DEPLOYPATH/uploads
+    - /bin/cp uploads/.htaccess $DEPLOYPATH/uploads/.htaccess

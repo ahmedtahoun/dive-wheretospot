@@ -1,0 +1,23 @@
+# Where To Spot Dive: every request that is not a real file goes to index.php.
+Options -Indexes
+<FilesMatch "\.(md|markdown|yml|yaml|sql|sqlite|json|lock|example\.php)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^config\.local\.php$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(app|dev)(/|$) - [F,L]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|svg|webp|jpg|png|mp4)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
