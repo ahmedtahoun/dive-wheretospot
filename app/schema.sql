@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS media (
   caption TEXT DEFAULT '',
   spot TEXT DEFAULT '',
   status TEXT DEFAULT 'pending',
+  credit TEXT DEFAULT '',
   created_at TEXT DEFAULT (datetime('now'))
 );
 

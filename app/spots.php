@@ -4,9 +4,12 @@
 // a first estimate, to be checked with local instructors before launch.
 //
 // profile.rock: polygons of [x 0..100, depth in metres] drawn as the cross-section on the spot page.
+// photo: Unsplash photo id (free licence), credit: the photographer's Unsplash username. Placeholders until we have
+// our own photos of each spot.
 // profile.features: [depth, kind, title, text]  kind = info | life | warn | course
 return [
   'blue-hole' => [
+    'photo' => 'photo-1628238452386-b916aa9e4443', 'credit' => 'raimondklavins', 'photo_alt' => 'The Sinai coast north of Dahab',
     'name' => 'Blue Hole', 'area' => 'North', 'lat' => 28.5721, 'lon' => 34.5370,
     'freedive' => true, 'scuba' => true, 'exposure' => 1,
     'depth' => '100–130 m (reported)', 'level' => 'All levels on the line · Arch: technical only',
@@ -36,6 +39,7 @@ return [
     ],
   ],
   'lighthouse' => [
+    'photo' => 'photo-1568575621216-ca74d9a8c687', 'credit' => 'nwahba', 'photo_alt' => 'Calm water off Dahab',
     'name' => 'Lighthouse', 'area' => 'Town', 'lat' => 28.4998, 'lon' => 34.5182,
     'freedive' => true, 'scuba' => true, 'exposure' => 0,
     'depth' => '40 m+', 'level' => 'Beginner to advanced',
@@ -59,6 +63,7 @@ return [
     ],
   ],
   'canyon' => [
+    'photo' => 'photo-1660428580106-638498d8bb27', 'credit' => 'francesco_ungaro', 'photo_alt' => 'A Red Sea reef wall',
     'name' => 'The Canyon', 'area' => 'North', 'lat' => 28.5530, 'lon' => 34.5300,
     'freedive' => true, 'scuba' => true, 'exposure' => 1,
     'depth' => '18–50 m', 'level' => 'Intermediate and up',
@@ -83,6 +88,7 @@ return [
     ],
   ],
   'bells' => [
+    'photo' => 'photo-1683009427666-340595e57e43', 'credit' => 'neom', 'photo_alt' => 'Light falling into a reef opening',
     'name' => 'The Bells', 'area' => 'North', 'lat' => 28.5752, 'lon' => 34.5377,
     'freedive' => false, 'scuba' => true, 'exposure' => 1,
     'depth' => '7–30 m+', 'level' => 'Advanced Open Water recommended',
@@ -105,6 +111,7 @@ return [
     ],
   ],
   'eel-garden' => [
+    'photo' => 'photo-1777553203575-ebd3be8f89a0', 'credit' => 'schwanebergo', 'photo_alt' => 'Reef fish over coral',
     'name' => 'Eel Garden', 'area' => 'Town', 'lat' => 28.5063, 'lon' => 34.5188,
     'freedive' => true, 'scuba' => true, 'exposure' => 2,
     'depth' => '8–25 m', 'level' => 'All levels',
@@ -124,6 +131,7 @@ return [
     ],
   ],
   'islands' => [
+    'photo' => 'photo-1651871756929-09d7bde4e97d', 'credit' => 'pascalvendel', 'photo_alt' => 'Red Sea soft corals',
     'name' => 'The Islands', 'area' => 'South', 'lat' => 28.4703, 'lon' => 34.5102,
     'freedive' => true, 'scuba' => true, 'exposure' => 1,
     'depth' => '6–18 m', 'level' => 'All levels',
@@ -143,6 +151,7 @@ return [
     ],
   ],
   'three-pools' => [
+    'photo' => 'photo-1544551763-dbfcd20d8e6c', 'credit' => 'sebaspenalambarri', 'photo_alt' => 'Shallow clear water',
     'name' => 'Three Pools', 'area' => 'South', 'lat' => 28.4380, 'lon' => 34.4700,
     'freedive' => true, 'scuba' => true, 'exposure' => 0,
     'depth' => '3–15 m', 'level' => 'Beginners and snorkellers',
@@ -162,6 +171,7 @@ return [
     ],
   ],
   'abu-helal' => [
+    'photo' => 'photo-1567628065080-ecdec09a7588', 'credit' => 'maxgotts', 'photo_alt' => 'Fish in the blue',
     'name' => 'Abu Helal', 'area' => 'North', 'lat' => 28.5620, 'lon' => 34.5330,
     'freedive' => true, 'scuba' => true, 'exposure' => 2,
     'depth' => '30 m+', 'level' => 'Intermediate and up',
@@ -181,6 +191,7 @@ return [
     ],
   ],
   'mashraba' => [
+    'photo' => 'photo-1628237697657-b9c90eb5d7f1', 'credit' => 'raimondklavins', 'photo_alt' => 'Dahab from above',
     'name' => 'Mashraba', 'area' => 'Town', 'lat' => 28.4905, 'lon' => 34.5145,
     'freedive' => true, 'scuba' => true, 'exposure' => 1,
     'depth' => '5–20 m', 'level' => 'All levels',
@@ -199,6 +210,7 @@ return [
     ],
   ],
   'abu-galum' => [
+    'photo' => 'photo-1649809014061-5f0f5d894e0d', 'credit' => 'sfkopstein', 'photo_alt' => 'The Gulf of Aqaba and the Sinai mountains',
     'name' => 'Ras Abu Galum', 'area' => 'North (protectorate)', 'lat' => 28.6200, 'lon' => 34.5600,
     'freedive' => true, 'scuba' => true, 'exposure' => 2,
     'depth' => '30 m+', 'level' => 'Intermediate and up',
@@ -218,6 +230,7 @@ return [
     ],
   ],
   'gabr-el-bint' => [
+    'photo' => 'photo-1633978077821-6b1b16a176a4', 'credit' => 'pascalvendel', 'photo_alt' => 'Table corals and reef fish',
     'name' => 'Gabr el Bint', 'area' => 'South (boat)', 'lat' => 28.3300, 'lon' => 34.4300,
     'freedive' => false, 'scuba' => true, 'exposure' => 1,
     'depth' => '30 m+', 'level' => 'Advanced Open Water',

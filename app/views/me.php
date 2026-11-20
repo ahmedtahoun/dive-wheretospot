@@ -123,7 +123,7 @@ $weekFresh = $p['teaching_week'] && $p['week_updated'];
     </form>
     <?php if ($media): ?>
     <div class="gallery">
-      <?php foreach ($media as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
+      <?php foreach ($media as $m): $src = img_src($m['file'], 900); ?>
         <figure class="<?= $m['status'] === 'pending' ? 'is-pending' : '' ?>">
           <?php if ($m['kind'] === 'video'): ?><video src="<?= h($src) ?>" controls preload="none"></video><?php else: ?><img src="<?= h($src) ?>" alt="" loading="lazy"><?php endif; ?>
           <figcaption class="small"><?= h($m['caption']) ?> <?= $m['spot'] && spot($m['spot']) ? '@ ' . h(spot($m['spot'])['name']) : '' ?>

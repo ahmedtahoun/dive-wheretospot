@@ -51,6 +51,7 @@
         $$('button', g).forEach(function (b) { b.setAttribute('aria-pressed', state[k].indexOf(b.dataset.v) !== -1 ? 'true' : 'false'); });
       });
       $$('[data-flag]').forEach(function (i) { i.checked = !!state[i.dataset.flag]; });
+      $$('select[data-fsel]').forEach(function (sel) { sel.value = state[sel.dataset.fsel][0] || ''; sel.classList.toggle('on', !!sel.value); });
       var q = new URLSearchParams();
       ['level', 'type', 'agency', 'lang', 'spot'].forEach(function (k) { if (state[k].length) q.set(k, state[k].join(',')); });
       if (state.week) q.set('week', '1');
@@ -69,6 +70,7 @@
       });
     });
     $$('[data-flag]').forEach(function (i) { i.addEventListener('change', function () { state[i.dataset.flag] = i.checked; apply(); }); });
+    $$('select[data-fsel]').forEach(function (sel) { sel.addEventListener('change', function () { state[sel.dataset.fsel] = sel.value ? [sel.value] : []; apply(); }); });
     $$('[data-reset]').forEach(function (b) {
       b.addEventListener('click', function () { state = { level: [], type: [], agency: [], lang: [], spot: [], week: false, verified: false }; apply(); });
     });
@@ -83,11 +85,6 @@
       arr.forEach(function (c) { list.appendChild(c); });
     });
 
-    var ft = $('.filters-toggle');
-    if (ft) ft.addEventListener('click', function () {
-      var f = ft.closest('.filters'); var open = f.classList.toggle('open');
-      ft.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
     apply();
   }
 

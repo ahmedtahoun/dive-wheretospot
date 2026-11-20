@@ -18,7 +18,8 @@ Later deploys: push to GitHub, then Pull + Deploy in cPanel. The database (`dive
 
 ## Before launch checklist
 
-- [ ] Remove sample providers and events (Admin)
+- [ ] Remove sample providers and events (Admin). Their sample photos (from Unsplash) go with them.
+- [ ] Spot photos are free Unsplash placeholders, credited on each page (`photo` in `app/spots.php`). Swap in your own photos of each spot when you have them.
 - [ ] Check spot pins, depths and wind exposure in `app/spots.php` with a local instructor
 - [ ] Have the privacy & terms page (`/en/privacy`) checked
 - [ ] Map tiles come from tile.openstreetmap.org (free, light use only). If traffic grows, switch to a tile provider with a key.

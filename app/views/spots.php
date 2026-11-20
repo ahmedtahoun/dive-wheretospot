@@ -21,7 +21,7 @@ $foot = '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorig
   <div class="spotlist">
     <?php foreach (spots() as $k => $s): $st = spot_state($s, $c); ?>
       <a class="card spotrow" href="/en/spots/<?= h($k) ?>" data-spot="<?= h($k) ?>">
-        <div class="spotrow-x"><?php partial('profile', ['s' => $s]); ?></div>
+        <div class="spotrow-x"><img src="<?= h(img_src($s['photo'], 400)) ?>" alt="<?= h($s['photo_alt']) ?>" loading="lazy"></div>
         <div class="spotrow-t">
           <b><?= h($s['name']) ?></b>
           <span class="muted small"><?= h($s['area']) ?> · <?= h($s['depth']) ?></span>

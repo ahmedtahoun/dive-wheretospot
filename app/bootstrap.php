@@ -77,6 +77,8 @@ function migrate(PDO $pdo): void {
         'work_links' => "TEXT DEFAULT ''",
     ];
     foreach ($add as $c => $def) if (!in_array($c, $cols, true)) $pdo->exec("ALTER TABLE providers ADD COLUMN $c $def");
+    $mcols = array_column($pdo->query('PRAGMA table_info(media)')->fetchAll(), 'name');
+    if (!in_array('credit', $mcols, true)) $pdo->exec("ALTER TABLE media ADD COLUMN credit TEXT DEFAULT ''");
     $pdo->exec('CREATE INDEX IF NOT EXISTS providers_token ON providers (edit_token)');
 }
 
@@ -248,6 +250,29 @@ function initials(string $name): string {
 }
 
 function avatar_hue(string $s): int { return hexdec(substr(md5($s), 0, 2)) % 360; }
+
+// ---------- images ----------
+// A media file is either an upload (file name) or, for sample data, an Unsplash photo id.
+function img_src(string $file, int $w = 800): string {
+    if (str_starts_with($file, 'photo-')) return 'https://images.unsplash.com/' . rawurlencode($file) . '?auto=format&fit=crop&q=70&w=' . $w;
+    return cfg('uploads_url') . '/' . rawurlencode($file);
+}
+function unsplash_credit(string $user): string {
+    return $user === '' ? '' : 'Photo: <a href="https://unsplash.com/@' . h($user) . '?utm_source=wheretospot&utm_medium=referral" rel="noopener" target="_blank">@' . h($user) . '</a> / Unsplash';
+}
+// The first approved photo of each provider: their cover on cards and profiles.
+function provider_covers(): array {
+    static $c = null;
+    if ($c === null) {
+        $c = [];
+        foreach (q("SELECT provider_id, file FROM media WHERE status = 'approved' AND kind = 'photo' ORDER BY id")->fetchAll() as $r) $c[(int)$r['provider_id']] ??= $r['file'];
+    }
+    return $c;
+}
+function short_langs(string $csv): string {
+    $map = ['English' => 'EN', 'Arabic' => 'AR', 'Russian' => 'RU', 'German' => 'DE', 'French' => 'FR', 'Italian' => 'IT', 'Spanish' => 'ES', 'Ukrainian' => 'UA', 'Polish' => 'PL'];
+    return implode(' · ', array_map(fn($l) => $map[$l] ?? $l, csv_list($csv)));
+}
 
 // ---------- views ----------
 function render(string $view, array $vars = []): void {

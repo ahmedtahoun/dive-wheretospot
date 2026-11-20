@@ -12,7 +12,7 @@
           <?= h(ucfirst($e['kind'])) ?><?= $en ? ' · until ' . date('D j M', $en) : ' · ' . date('D', $s) ?>
           <?php if (!empty($e['pname'])): ?> · <a href="/en/p/<?= h($e['pslug']) ?>"><?= h($e['pname']) ?></a><?php endif; ?>
         </span>
-        <?php if ($e['description']): ?><span class="small"><?= h($e['description']) ?></span><?php endif; ?>
+        <?php if ($e['description'] && !empty($long)): ?><span class="small"><?= h($e['description']) ?></span><?php endif; ?>
       </span>
     </li>
   <?php endforeach; ?>

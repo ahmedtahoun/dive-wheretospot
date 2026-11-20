@@ -4,7 +4,7 @@
   <p class="muted">Approve if it's theirs, the people in it look fine with it, and nothing is unsafe (no solo diving, no blackout "stunts"). Verified providers skip this queue.</p>
   <?php if (!$rows): ?><p class="muted">Nothing waiting. ✓</p><?php endif; ?>
   <div class="gallery admin-gallery">
-    <?php foreach ($rows as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
+    <?php foreach ($rows as $m): $src = img_src($m['file'], 900); ?>
       <figure class="is-pending">
         <?php if ($m['kind'] === 'video'): ?><video src="<?= h($src) ?>" controls preload="metadata"></video><?php else: ?><img src="<?= h($src) ?>" alt=""><?php endif; ?>
         <figcaption class="small"><b><?= h($m['name']) ?></b> · <?= h($m['caption']) ?> <?= $m['spot'] && spot($m['spot']) ? '@ ' . h(spot($m['spot'])['name']) : '' ?>

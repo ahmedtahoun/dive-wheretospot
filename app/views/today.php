@@ -66,7 +66,7 @@ $maxWind = $c ? max(20, max(array_map(fn($x) => $x['gust'], $c['hours'] ?: [['gu
     </div>
     <div id="events">
       <h2>Events & camps</h2>
-      <?php partial('events', ['events' => $events]); ?>
+      <?php partial('events', ['events' => $events, 'long' => true]); ?>
     </div>
   </div>
 </section>

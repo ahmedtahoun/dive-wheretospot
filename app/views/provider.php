@@ -14,23 +14,31 @@ $jsonld = [
   'sameAs' => array_values(array_map(fn($k) => $p[$k], array_keys($socialLinks))),
 ];
 ?>
-<section class="phero" style="--h:<?= $hue ?>">
-  <div class="wrap phero-in">
-    <div class="avatar xl" style="--h:<?= $hue ?>" aria-hidden="true"><?= h(initials($p['name'])) ?></div>
-    <div class="phero-text">
-      <p class="eyebrow"><a href="/en/freediving">Schools & coaches</a> · <?= h(PROVIDER_TYPES[$p['type']] ?? '') ?><?= $p['base_area'] ? ' · ' . h($p['base_area']) : '' ?></p>
-      <h1><?= h($p['name']) ?></h1>
+<?php $photos = array_values(array_filter($media, fn($m) => $m['kind'] === 'photo')); usort($photos, fn($a, $b) => $a['id'] <=> $b['id']); // same cover as on cards ?>
+<div class="wrap">
+  <p class="crumbs small"><a href="/en/freediving">← Schools & coaches</a></p>
+  <?php if ($photos): ?>
+  <a class="mosaic n<?= min(3, count($photos)) ?>" href="#work" aria-label="See all photos">
+    <?php foreach (array_slice($photos, 0, 3) as $i => $m): ?>
+      <img src="<?= h(img_src($m['file'], $i === 0 ? 1200 : 600)) ?>" alt="<?= h($m['caption'] ?: $p['name']) ?>">
+    <?php endforeach; ?>
+    <?php if (count($photos) > 3): ?><span class="mosaic-more">+<?= count($photos) - 3 ?> photos</span><?php endif; ?>
+  </a>
+  <?php endif; ?>
+  <header class="phead">
+    <?php if (!$photos): ?><div class="avatar xl" style="--h:<?= $hue ?>" aria-hidden="true"><?= h(initials($p['name'])) ?></div><?php endif; ?>
+    <div>
+      <h1><?= h($p['name']) ?><?php if ($p['verified']): ?> <span class="vtick lg" title="<?= h($p['verified_note'] ?: 'Certificate checked on the agency\'s instructor list') ?>" aria-label="Verified">✓</span><?php endif; ?></h1>
+      <p class="phead-meta"><?= h(PROVIDER_TYPES[$p['type']] ?? '') ?><?= $p['base_area'] ? ' · ' . h($p['base_area']) : '' ?> · <?= h(LICENCE[$p['licence']] ?? '') ?><?= $p['works_with'] ? ' (with ' . h($p['works_with']) . ')' : '' ?></p>
       <?php if ($p['tagline']): ?><p class="lead"><?= h($p['tagline']) ?></p><?php endif; ?>
       <div class="badges">
         <?php if ($p['status'] !== 'approved'): ?><span class="badge b-warn">Not public yet (<?= h($p['status']) ?>)</span><?php endif; ?>
         <?php if ($p['is_sample']): ?><span class="badge b-sample" title="Fictional profile for the prototype">Sample profile</span><?php endif; ?>
-        <?php if ($p['verified']): ?><span class="badge b-ok" title="<?= h($p['verified_note'] ?: 'Certificate checked on the agency\'s instructor search') ?>">✓ Verified certificates</span><?php endif; ?>
         <?php if ($p['founding']): ?><span class="badge b-found">Founding member</span><?php endif; ?>
-        <span class="badge b-plain"><?= h(LICENCE[$p['licence']] ?? '') ?><?= $p['works_with'] ? ' · with ' . h($p['works_with']) : '' ?></span>
       </div>
     </div>
-  </div>
-</section>
+  </header>
+</div>
 
 <div class="wrap profile">
   <div class="profile-main">
@@ -91,7 +99,7 @@ $jsonld = [
     <?php endif; ?>
 
     <section class="block">
-      <h2>Their work</h2>
+      <h2 id="work">Their work</h2>
       <?php $links = array_filter(preg_split('/\s+/', (string)$p['work_links'])); if ($links): ?>
         <div class="worklinks">
           <?php foreach ($links as $l):
@@ -110,14 +118,14 @@ $jsonld = [
       <?php endif; ?>
       <?php if ($media): ?>
         <div class="gallery">
-          <?php foreach ($media as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
+          <?php foreach ($media as $m): $src = img_src($m['file'], 900); ?>
             <figure>
               <?php if ($m['kind'] === 'video'): ?>
                 <video src="<?= h($src) ?>" controls preload="none" playsinline></video>
               <?php else: ?>
                 <img src="<?= h($src) ?>" alt="<?= h($m['caption'] ?: $p['name'] . ' freediving in Dahab') ?>" loading="lazy">
               <?php endif; ?>
-              <?php if ($m['caption'] || $m['spot']): ?><figcaption><?= h($m['caption']) ?><?php if ($m['spot'] && spot($m['spot'])): ?> <a href="/en/spots/<?= h($m['spot']) ?>">@ <?= h(spot($m['spot'])['name']) ?></a><?php endif; ?></figcaption><?php endif; ?>
+              <?php if ($m['caption'] || $m['spot'] || $m['credit']): ?><figcaption><?= h($m['caption']) ?><?php if ($m['spot'] && spot($m['spot'])): ?> <a href="/en/spots/<?= h($m['spot']) ?>">@ <?= h(spot($m['spot'])['name']) ?></a><?php endif; ?><?php if ($m['credit']): ?><span class="credit"><?= unsplash_credit($m['credit']) ?></span><?php endif; ?></figcaption><?php endif; ?>
             </figure>
           <?php endforeach; ?>
         </div>
@@ -136,7 +144,7 @@ $jsonld = [
     <?php endif; ?>
 
     <?php if ($events): ?>
-    <section class="block"><h2>Upcoming</h2><?php partial('events', ['events' => $events]); ?></section>
+    <section class="block"><h2>Upcoming</h2><?php partial('events', ['events' => $events, 'long' => true]); ?></section>
     <?php endif; ?>
 
     <section class="block" id="inquire">

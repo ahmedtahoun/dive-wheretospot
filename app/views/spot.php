@@ -24,11 +24,16 @@ $jsonld = [
 $foot = '<script src="/assets/dive.js?v=' . @filemtime(ROOT_DIR . '/assets/dive.js') . '" defer></script>';
 $bodyClass = 'is-spot';
 ?>
-<section class="spot-head">
+<section class="spot-hero" style="--hero:url('<?= h(img_src($s['photo'], 1800)) ?>')">
   <div class="wrap">
     <p class="eyebrow"><a href="/en/spots">Spots</a> · <?= h($s['area']) ?></p>
     <h1><?= h($s['name']) ?></h1>
     <p class="lead"><?= h($s['summary']) ?></p>
+  </div>
+  <p class="photo-credit"><?= h($s['photo_alt']) ?> · <?= unsplash_credit($s['credit']) ?></p>
+</section>
+<section class="spot-head">
+  <div class="wrap">
     <dl class="spotfacts">
       <div><dt>Depth</dt><dd><?= h($s['depth']) ?></dd></div>
       <div><dt>Level</dt><dd><?= h($s['level']) ?></dd></div>
@@ -104,11 +109,11 @@ $bodyClass = 'is-spot';
     <section class="block">
       <h2><?= h($s['name']) ?> through their lenses</h2>
       <div class="gallery">
-        <?php foreach ($photos as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
+        <?php foreach ($photos as $m): $src = img_src($m['file'], 900); ?>
           <figure>
             <?php if ($m['kind'] === 'video'): ?><video src="<?= h($src) ?>" controls preload="none" playsinline></video>
             <?php else: ?><img src="<?= h($src) ?>" alt="<?= h($m['caption'] ?: $s['name'] . ', Dahab') ?>" loading="lazy"><?php endif; ?>
-            <figcaption><?= h($m['caption']) ?> <a href="/en/p/<?= h($m['slug']) ?>">by <?= h($m['name']) ?></a></figcaption>
+            <figcaption><?= h($m['caption']) ?> <a href="/en/p/<?= h($m['slug']) ?>">with <?= h($m['name']) ?></a><?php if ($m['credit']): ?><span class="credit"><?= unsplash_credit($m['credit']) ?></span><?php endif; ?></figcaption>
           </figure>
         <?php endforeach; ?>
       </div>

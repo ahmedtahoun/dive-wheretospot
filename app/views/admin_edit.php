@@ -54,7 +54,7 @@ $tok = h(csrf_token());
       <button class="btn btn-primary btn-small">Upload</button>
     </form>
     <div class="gallery admin-gallery">
-      <?php foreach ($media as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
+      <?php foreach ($media as $m): $src = img_src($m['file'], 900); ?>
         <figure class="<?= $m['status'] === 'pending' ? 'is-pending' : '' ?>">
           <?php if ($m['kind'] === 'video'): ?><video src="<?= h($src) ?>" controls preload="none"></video><?php else: ?><img src="<?= h($src) ?>" alt=""><?php endif; ?>
           <figcaption class="small"><?= h($m['caption']) ?> <?= $m['spot'] ? '@ ' . h(spot($m['spot'])['name'] ?? $m['spot']) : '' ?> · <b><?= h($m['status']) ?></b>

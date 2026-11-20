@@ -161,7 +161,21 @@ function seed_sample_data(PDO $pdo): void {
         foreach ($p['services'] as $s) $svc->execute([$id, $s[0], $s[1], $s[2], $s[3], $s[4], $s[5], $s[6]]);
     }
 
+    // Sample photos (Unsplash, free licence) so the prototype looks real. They go when the sample providers go.
+    $media = [
+        'saddle-line-freediving' => [['photo-1462947760324-15811216b688', 'bomanbo', 'Down the line', 'lighthouse'], ['photo-1602199926649-2e5e447bab97', 'kirildobrev', 'Reef session', 'blue-hole'], ['photo-1644387893399-25ece6338ab8', 'dapino', 'Breathe-up at the buoy', 'lighthouse']],
+        'coach-lina-r' => [['photo-1502209524164-acea936639a2', 'jeremybishop', 'Into the deep', 'blue-hole'], ['photo-1628630500614-1c8924c99c3e', 'sandbarproductions', 'Freefall', 'blue-hole'], ['photo-1614241580814-477d221ebaeb', 'shathiu', 'Recovery breathing', '']],
+        'blue-rim-freedivers' => [['photo-1544551763-dbfcd20d8e6c', 'sebaspenalambarri', 'First open-water session', 'three-pools'], ['photo-1503177847378-d2048487fa46', 'jeremybishop', 'Beginner day', 'lighthouse'], ['photo-1682687981674-0927add86f2b', 'neom', 'Coming up slowly', '']],
+        'reef-and-breath' => [['photo-1778343215246-7b46a7cd30ae', 'mero_dnt', 'With the fish', 'eel-garden'], ['photo-1621432253242-09eece55193c', 'boardshortsben', 'Fun dive', 'eel-garden']],
+        'omar-h-freelance' => [['photo-1682686581312-506a8b53190e', 'neom', 'Reef tour', 'islands'], ['photo-1603259860985-5dfe6bf9a1fd', 'israelgilfilms', 'Private session', 'abu-galum']],
+        'sand-dune-divers' => [['photo-1758968571011-af0157c61d7b', 'nirhimi', 'Scuba at the Blue Hole', 'blue-hole'], ['photo-1567628065080-ecdec09a7588', 'maxgotts', 'Into the blue', 'bells']],
+        'coach-yuri-v' => [['photo-1683009427666-340595e57e43', 'neom', 'Equalisation drills', 'lighthouse']],
+    ];
+    $mi = $pdo->prepare("INSERT INTO media (provider_id, file, kind, caption, spot, status, credit) VALUES (?, ?, 'photo', ?, ?, 'approved', ?)");
+
     $pid = fn($slug) => (int)$pdo->query('SELECT id FROM providers WHERE slug = ' . $pdo->quote($slug))->fetchColumn();
+    foreach ($media as $slug => $items) foreach ($items as [$file, $credit, $cap, $spot]) $mi->execute([$pid($slug), $file, $cap, $spot, $credit]);
+
     $ev = $pdo->prepare('INSERT INTO events (provider_id,title,kind,starts_on,ends_on,description,is_sample) VALUES (?,?,?,?,?,?,1)');
     $d = fn($n) => date('Y-m-d', strtotime("+$n days"));
     $ev->execute([$pid('coach-lina-r'), 'Blue Hole depth camp', 'camp', $d(3), $d(8), 'Six days of coached depth training, max 2 athletes per coach.']);
