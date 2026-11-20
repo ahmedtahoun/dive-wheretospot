@@ -6,5 +6,6 @@ return [
     'data_dir'            => '/home/viorowzb/dive-data',        // outside public_html: the database lives here
     'admin_password_hash' => '',                                // paste the hash here
     'admin_email'         => '',                                // gets a copy of every inquiry and listing request
+    'whatsapp_admin'      => '',                                // your WhatsApp, e.g. +201000000000: shows "Sign up on WhatsApp" on /en/join
     'mail_from'           => 'no-reply@wheretospot.com',
 ];

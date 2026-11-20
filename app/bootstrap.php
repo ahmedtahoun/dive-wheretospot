@@ -53,11 +53,43 @@ function db(): PDO {
     ]);
     $pdo->exec('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 4000;');
     $pdo->exec(file_get_contents(APP_DIR . '/schema.sql'));
+    migrate($pdo);
     if ($fresh) {
         require_once APP_DIR . '/seed.php';
         seed_sample_data($pdo);
     }
+    // Backfill private edit links, and switch "teaching this week" off after 7 days without a tap.
+    foreach ($pdo->query("SELECT id FROM providers WHERE edit_token = ''")->fetchAll() as $r) {
+        $pdo->prepare('UPDATE providers SET edit_token = ? WHERE id = ?')->execute([new_token(), $r['id']]);
+    }
+    $pdo->exec("UPDATE providers SET teaching_week = 0 WHERE teaching_week = 1 AND week_updated < date('now', '-7 days')");
     return $pdo;
+}
+
+// Adds columns that older databases don't have yet. Safe to run on every request.
+function migrate(PDO $pdo): void {
+    $cols = array_column($pdo->query('PRAGMA table_info(providers)')->fetchAll(), 'name');
+    $add = [
+        'edit_token' => "TEXT DEFAULT ''",
+        'cert_agency' => "TEXT DEFAULT ''",
+        'cert_number' => "TEXT DEFAULT ''",
+        'cert_file' => "TEXT DEFAULT ''",
+        'work_links' => "TEXT DEFAULT ''",
+    ];
+    foreach ($add as $c => $def) if (!in_array($c, $cols, true)) $pdo->exec("ALTER TABLE providers ADD COLUMN $c $def");
+    $pdo->exec('CREATE INDEX IF NOT EXISTS providers_token ON providers (edit_token)');
+}
+
+function new_token(): string { return bin2hex(random_bytes(16)); }
+
+// The provider's private page. Anyone with the link can edit that one profile, so it is only ever
+// sent to the provider (WhatsApp or email) and can be replaced from the admin.
+function me_url(array $p, string $sub = ''): string { return abs_url('/me/' . $p['edit_token'] . $sub); }
+
+function provider_by_token(string $token): ?array {
+    if (!preg_match('/^[a-f0-9]{32}$/', $token)) return null;
+    $p = q('SELECT * FROM providers WHERE edit_token = ?', [$token])->fetch();
+    return ($p && hash_equals($p['edit_token'], $token)) ? $p : null;
 }
 
 function q(string $sql, array $args = []): PDOStatement {

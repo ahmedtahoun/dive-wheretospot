@@ -1,10 +1,6 @@
 <?php
 partial('adminnav');
 $tok = h(csrf_token());
-$v = fn($k) => h($p[$k] ?? '');
-$chk = fn($k, $x) => in_array($x, csv_list($p[$k]), true) ? ' checked' : '';
-$rows = $svc;
-for ($i = 0; $i < 3; $i++) $rows[] = ['category' => 'course', 'level' => 1, 'agency' => '', 'title' => '', 'days' => '', 'price_eur' => '', 'notes' => ''];
 ?>
 <section class="wrap section">
   <p class="small"><a href="/admin/">← Providers</a></p>
@@ -23,70 +19,25 @@ for ($i = 0; $i < 3; $i++) $rows[] = ['category' => 'course', 'level' => 1, 'age
   <?php if ($msg): ?><div class="notice <?= $msg === 'Saved' || $msg === 'Uploaded' ? 'ok' : 'err' ?>" role="status"><?= h($msg) ?></div><?php endif; ?>
   <?php if ($p['submitted_courses']): ?><div class="notice warn"><b>Courses they sent:</b><pre><?= h($p['submitted_courses']) ?></pre>Type them into the courses table below.</div><?php endif; ?>
 
+  <div class="card linkcard" id="link">
+    <h2>Their private page</h2>
+    <p class="muted small">Anyone with this link can edit this profile, so send it only to them. They use it to edit everything, upload photos and set "teaching this week".</p>
+    <input class="linkbox" readonly value="<?= h(me_url($p)) ?>" onclick="this.select()">
+    <div class="actions">
+      <?php if ($p['whatsapp']): ?><a class="btn btn-small btn-wa" target="_blank" rel="noopener" href="<?= h(wa_link($p['whatsapp'], "Hi {$p['name']}, here is your private link to edit your Where To Spot Dive profile, add photos and set your weekly status (keep it private): " . me_url($p))) ?>">Send on WhatsApp</a><?php endif; ?>
+      <a class="btn btn-small btn-ghost" href="<?= h(me_url($p)) ?>" target="_blank">Open it</a>
+      <form method="post" action="/admin/p/<?= (int)$p['id'] ?>/token" class="inline" onsubmit="return confirm('Make a new link? The old one stops working.')"><input type="hidden" name="csrf" value="<?= $tok ?>"><button class="btn btn-small btn-ghost">Make a new link</button></form>
+    </div>
+    <?php if ($p['cert_number'] || $p['cert_file']): ?>
+      <p class="small"><b>Certificate claimed:</b> <?= h($p['cert_agency']) ?> <?= h($p['cert_number']) ?>
+        <?php if ($p['cert_file']): ?> · <a href="/admin/cert/<?= (int)$p['id'] ?>" target="_blank">See card photo</a><?php endif; ?>
+        <?= $p['verified'] ? ' · <span class="yes">✓ verified</span>' : ' · <b>not verified yet</b>' ?></p>
+    <?php endif; ?>
+  </div>
+
   <form class="form card" method="post" action="/admin/p/<?= (int)$p['id'] ?>">
     <input type="hidden" name="csrf" value="<?= $tok ?>">
-    <h2>Profile</h2>
-    <div class="row3">
-      <label>Name <input name="name" value="<?= $v('name') ?>" maxlength="80" required></label>
-      <label>URL name <input name="slug" value="<?= $v('slug') ?>" maxlength="80" pattern="[a-z0-9-]+"></label>
-      <label>Type <select name="type"><?php foreach (PROVIDER_TYPES as $k => $t): ?><option value="<?= $k ?>"<?= $p['type'] === $k ? ' selected' : '' ?>><?= h($t) ?></option><?php endforeach; ?></select></label>
-    </div>
-    <label>Tagline <input name="tagline" value="<?= $v('tagline') ?>" maxlength="140"></label>
-    <label>About <textarea name="bio" rows="5" maxlength="4000"><?= $v('bio') ?></textarea></label>
-    <div class="row3">
-      <label>WhatsApp <input name="whatsapp" value="<?= $v('whatsapp') ?>" maxlength="30"></label>
-      <label>Email <span class="muted small">(gets inquiry emails)</span><input name="email" type="email" value="<?= $v('email') ?>" maxlength="120"></label>
-      <label>Area / base <input name="base_area" value="<?= $v('base_area') ?>" maxlength="60"></label>
-    </div>
-    <div class="row3">
-      <label>Status <select name="licence"><?php foreach (LICENCE as $k => $t): ?><option value="<?= $k ?>"<?= $p['licence'] === $k ? ' selected' : '' ?>><?= h($t) ?></option><?php endforeach; ?></select></label>
-      <label>Works with centre <input name="works_with" value="<?= $v('works_with') ?>" maxlength="80"></label>
-      <label>Certificate check note <input name="verified_note" value="<?= $v('verified_note') ?>" maxlength="200" placeholder="e.g. AIDA instructor #1234 checked 20 Nov"></label>
-    </div>
-    <fieldset><legend>Agencies</legend><div class="checks"><?php foreach (AGENCIES as $a): ?><label class="check"><input type="checkbox" name="agencies[]" value="<?= h($a) ?>"<?= $chk('agencies', $a) ?>> <?= h($a) ?></label><?php endforeach; ?></div></fieldset>
-    <fieldset><legend>Languages</legend><div class="checks"><?php foreach (LANGS as $l): ?><label class="check"><input type="checkbox" name="languages[]" value="<?= h($l) ?>"<?= $chk('languages', $l) ?>> <?= h($l) ?></label><?php endforeach; ?></div></fieldset>
-    <fieldset><legend>Spots</legend><div class="checks"><?php foreach (spots() as $k => $s): ?><label class="check"><input type="checkbox" name="spots[]" value="<?= h($k) ?>"<?= $chk('spots', $k) ?>> <?= h($s['name']) ?></label><?php endforeach; ?></div></fieldset>
-    <div class="row3">
-      <label>Max students per instructor <input type="number" name="max_ratio" min="0" max="20" value="<?= (int)$p['max_ratio'] ?>"></label>
-      <label>Years teaching <input type="number" name="years_teaching" min="0" value="<?= (int)$p['years_teaching'] ?>"></label>
-      <label>Students certified <input type="number" name="students_certified" min="0" value="<?= (int)$p['students_certified'] ?>"></label>
-    </div>
-    <div class="checks">
-      <label class="check"><input type="checkbox" name="pool" value="1"<?= $p['pool'] ? ' checked' : '' ?>> Has a training pool</label>
-      <label class="check"><input type="checkbox" name="gear_included" value="1"<?= $p['gear_included'] ? ' checked' : '' ?>> Gear included in courses</label>
-    </div>
-    <div class="row2">
-      <label>Personal best <input name="personal_best" value="<?= $v('personal_best') ?>" maxlength="60"></label>
-      <label>Prices checked on <input type="date" name="checked_on" value="<?= $v('checked_on') ?>"></label>
-    </div>
-    <label>Achievements <span class="muted small">(one per line)</span><textarea name="achievements" rows="3" maxlength="2000"><?= $v('achievements') ?></textarea></label>
-    <div class="row2">
-      <label class="check"><input type="checkbox" name="teaching_week" value="1"<?= $p['teaching_week'] ? ' checked' : '' ?>> Teaching this week</label>
-      <label>This week's note <input name="week_note" value="<?= $v('week_note') ?>" maxlength="120" placeholder="e.g. Beginner course Monday, 2 spots left"></label>
-    </div>
-    <fieldset><legend>Social links</legend><div class="row3"><?php foreach (SOCIALS as $k => $label): ?><label><?= h($label) ?> <input name="<?= $k ?>" type="url" value="<?= $v($k) ?>" maxlength="200" placeholder="https://"></label><?php endforeach; ?></div></fieldset>
-
-    <h2 id="services">Courses & prices <span class="muted small">(€; leave the title empty to skip a row)</span></h2>
-    <div class="cmp-scroll">
-    <table class="svc-edit">
-      <thead><tr><th>Type</th><th>Level</th><th>Agency</th><th>Title</th><th>Days</th><th>€</th><th>Notes</th><th>Remove</th></tr></thead>
-      <tbody>
-      <?php foreach ($rows as $i => $s): ?>
-        <tr>
-          <td><select name="svc[<?= $i ?>][category]"><?php foreach (SERVICE_CATS as $k => $l): ?><option value="<?= $k ?>"<?= $s['category'] === $k ? ' selected' : '' ?>><?= h($l) ?></option><?php endforeach; ?></select></td>
-          <td><select name="svc[<?= $i ?>][level]"><?php foreach (LEVELS as $k => [$l]): ?><option value="<?= $k ?>"<?= (int)$s['level'] === $k ? ' selected' : '' ?>><?= h($l) ?></option><?php endforeach; ?></select></td>
-          <td><select name="svc[<?= $i ?>][agency]"><option value="">—</option><?php foreach (AGENCIES as $a): ?><option<?= $s['agency'] === $a ? ' selected' : '' ?>><?= $a ?></option><?php endforeach; ?></select></td>
-          <td><input name="svc[<?= $i ?>][title]" value="<?= h($s['title']) ?>" maxlength="100"></td>
-          <td><input name="svc[<?= $i ?>][days]" type="number" step="0.5" min="0" value="<?= h($s['days']) ?>" class="num"></td>
-          <td><input name="svc[<?= $i ?>][price_eur]" type="number" step="1" min="0" value="<?= h($s['price_eur']) ?>" class="num"></td>
-          <td><input name="svc[<?= $i ?>][notes]" value="<?= h($s['notes']) ?>" maxlength="120"></td>
-          <td><input type="checkbox" name="svc[<?= $i ?>][del]" value="1" aria-label="Remove row"></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
-    </div>
-    <p class="muted small">Save adds 3 more empty rows.</p>
+    <?php partial('pform', ['p' => $p, 'svc' => $svc, 'admin' => true]); ?>
     <button class="btn btn-primary" type="submit">Save profile</button>
   </form>
 

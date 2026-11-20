@@ -92,6 +92,9 @@ function page_spot(string $slug): void {
 function page_provider(string $slug): void {
     $p = q('SELECT * FROM providers WHERE slug = ?', [$slug])->fetch();
     if (!$p || ($p['status'] !== 'approved' && !admin_logged_in())) not_found();
+    if ($p['status'] === 'approved' && !admin_logged_in() && !preg_match('/bot|crawl|spider|preview|facebookexternalhit|whatsapp/i', $_SERVER['HTTP_USER_AGENT'] ?? '')) {
+        q("INSERT INTO clicks (provider_id, kind) VALUES (?, 'view')", [$p['id']]);
+    }
     render('provider', [
         'title' => $p['name'] . ' · ' . (PROVIDER_TYPES[$p['type']] ?? 'Freediving') . ' in Dahab',
         'desc'  => ($p['tagline'] ?: $p['name'] . ' in Dahab') . ' Courses, prices, languages and contact.',
@@ -103,6 +106,7 @@ function page_provider(string $slug): void {
 }
 
 function admin_logged_in(): bool {
+    if (empty($_COOKIE['dive_sess'])) return false; // don't start a session for every visitor
     start_session();
     return !empty($_SESSION['admin']);
 }
@@ -169,23 +173,21 @@ function post_join(): void {
     if ($errors) { page_join($errors, $old); return; }
     if (rate_limited('join', 5, 3600)) { http_response_code(429); exit('Too many requests. Please try again later.'); }
 
-    $pick = fn($k, $allowed) => implode(',', array_values(array_intersect((array)($_POST[$k] ?? []), $allowed)));
     $slug = slugify($name);
     if (q('SELECT 1 FROM providers WHERE slug = ?', [$slug])->fetchColumn()) $slug .= '-' . substr(bin2hex(random_bytes(2)), 0, 3);
-    $socials = [];
-    foreach (array_keys(SOCIALS) as $k) {
-        $v = $f($k, 200);
-        $socials[$k] = ($v !== '' && filter_var($v, FILTER_VALIDATE_URL) && preg_match('#^https?://#', $v)) ? $v : '';
-    }
-    q('INSERT INTO providers (slug,name,type,tagline,bio,languages,agencies,licence,works_with,whatsapp,email,website,instagram,tiktok,youtube,facebook,base_area,spots,personal_best,submitted_courses,status)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,\'pending\')', [
-        $slug, $name, $type, $f('tagline', 140), $f('bio', 2000), $pick('languages', LANGS), $pick('agencies', AGENCIES),
-        $_POST['licence'], $f('works_with', 80), $wa,
-        filter_var($f('email', 120), FILTER_VALIDATE_EMAIL) ?: '', $socials['website'], $socials['instagram'], $socials['tiktok'],
-        $socials['youtube'], $socials['facebook'], $f('base_area', 60), $pick('spots', array_keys(spots())), $f('personal_best', 60), $f('courses', 2000),
+    $email = filter_var($f('email', 120), FILTER_VALIDATE_EMAIL) ?: '';
+    $token = new_token();
+    q("INSERT INTO providers (slug, name, type, licence, whatsapp, email, agencies, edit_token, status) VALUES (?,?,?,?,?,?,?,?,'pending')", [
+        $slug, $name, $type, $_POST['licence'], $wa, $email,
+        implode(',', array_values(array_intersect((array)($_POST['agencies'] ?? []), AGENCIES))), $token,
     ]);
+    $link = abs_url('/me/' . $token);
+    $emailed = false;
+    if ($email && !is_local()) {
+        $emailed = @mail($email, 'Your Where To Spot Dive page', "Hi $name,\n\nThis is your private page to edit your profile, add courses, photos and set your weekly status. Keep it to yourself:\n$link\n\nWhere To Spot Dive", 'From: ' . cfg('mail_from'));
+    }
     if (cfg('admin_email') && !is_local()) @mail(cfg('admin_email'), 'New listing request: ' . $name, "Review it: " . abs_url('/admin/'), 'From: ' . cfg('mail_from'));
-    render('joined', ['title' => 'Thanks, we got it', 'name' => $name, 'noindex' => true]);
+    render('joined', ['title' => 'Your private page', 'name' => $name, 'link' => $link, 'whatsapp' => $wa, 'emailed' => $emailed, 'noindex' => true]);
 }
 
 function go_click(string $kind, string $slug): void {

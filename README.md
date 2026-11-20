@@ -17,8 +17,11 @@ Plain PHP 8 + SQLite, no framework and no build step. Runs on the same Namecheap
 | Today | `/en/today` | Wind, gusts, water, waves (Open-Meteo, cached 30 min), a 12-hour wind chart, spots sorted calmest first, teaching this week, events |
 | Prices | `/en/prices` | The flagship SEO page: every course in one sortable table with typical prices per level |
 | Share kit | `/en/p/{slug}/kit` | Instagram story card (canvas PNG), website badge (`/badge/{slug}.svg`), live widget (`/widget/today?p={slug}`) |
-| Join | `/en/join` | Free listing request, goes to admin approval |
-| Admin | `/admin/` | Approve, verify, feature, founding member, teaching this week, edit profile and courses, upload photos and videos with a spot tag, inquiries, events, remove sample data |
+| Join | `/en/join` | 1-minute sign-up (or "Sign up on WhatsApp"), then the provider gets their private page straight away |
+| Provider's private page | `/me/{token}` | No password: the link is the login. Edit profile, courses (one-tap presets) and prices, certificate number + card photo, social links and best posts, photos/videos with spot tags, events, "teaching this week" (auto-off after 7 days), views/clicks/inquiries for 30 days, replies to inquiries |
+| Admin | `/admin/` | Approve, verify (with the certificate claimed + card photo), feature, private link (send on WhatsApp / replace), photo queue, weekly WhatsApp check, inquiries, events, remove sample data |
+
+Photos from verified providers publish straight away; others wait in Admin → Photos to check. If a verified provider changes their instructor number, the badge switches off until you check again.
 
 Contact links go through `/go/{whatsapp|instagram|…}/{slug}`, which counts each click. That count is the proof of value when you sell featured spots.
 

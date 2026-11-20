@@ -6,6 +6,7 @@
     <a class="card stat" href="/admin/?status=approved"><p class="muted small">Live</p><p class="stat-big"><?= (int)($counts['approved'] ?? 0) ?></p></a>
     <a class="card stat" href="/admin/inquiries"><p class="muted small">New inquiries</p><p class="stat-big"><?= $newInq ?></p></a>
     <div class="card stat"><p class="muted small">Contact clicks, 30 days</p><p class="stat-big"><?= $clicks30 ?></p></div>
+    <a class="card stat" href="/admin/photos"><p class="muted small">Photos to check</p><p class="stat-big"><?= $photosPending ?></p></a>
   </div>
 
   <div class="sec-head">
@@ -27,8 +28,8 @@
         <td><a href="/admin/p/<?= (int)$p['id'] ?>"><b><?= h($p['name']) ?></b></a><br><span class="muted small"><?= h(PROVIDER_TYPES[$p['type']] ?? '') ?> · <?= h($p['whatsapp']) ?></span>
           <?php if ($p['submitted_courses']): ?><details class="small"><summary>Sent courses</summary><pre><?= h($p['submitted_courses']) ?></pre></details><?php endif; ?></td>
         <td><span class="badge st-<?= h($p['status']) ?>"><?= h($p['status']) ?></span><?= $p['is_sample'] ? ' <span class="badge b-sample">sample</span>' : '' ?></td>
-        <td class="small"><?= $p['verified'] ? '✓ verified ' : '' ?><?= $p['featured'] ? '★ featured ' : '' ?><?= $p['founding'] ? 'founding ' : '' ?><?= $p['teaching_week'] ? '● this week' : '' ?><?= $p['media_pending'] ? '<br><b>' . (int)$p['media_pending'] . ' photo(s) to check</b>' : '' ?></td>
-        <td class="small"><?= (int)$p['clicks30'] ?> clicks (<?= (int)$p['wa30'] ?> WhatsApp)<br><?= (int)$p['inq'] ?> inquiries</td>
+        <td class="small"><?= $p['verified'] ? '✓ verified ' : '' ?><?= $p['featured'] ? '★ featured ' : '' ?><?= $p['founding'] ? 'founding ' : '' ?><?= $p['teaching_week'] ? '● this week' : '' ?><?= $p['media_pending'] ? '<br><b>' . (int)$p['media_pending'] . ' photo(s) to check</b>' : '' ?><?= ($p['cert_number'] && !$p['verified']) ? '<br><b>Certificate to check: ' . h($p['cert_agency'] . ' ' . $p['cert_number']) . '</b>' : '' ?></td>
+        <td class="small"><?= (int)$p['views30'] ?> views · <?= (int)$p['clicks30'] ?> clicks (<?= (int)$p['wa30'] ?> WhatsApp)<br><?= (int)$p['inq'] ?> inquiries</td>
         <td>
           <form method="post" action="/admin/p/<?= (int)$p['id'] ?>/action" class="actions">
             <input type="hidden" name="csrf" value="<?= $tok ?>"><input type="hidden" name="back" value="/admin/<?= $status ? '?status=' . h($status) : '' ?>">

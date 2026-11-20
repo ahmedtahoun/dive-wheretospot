@@ -92,6 +92,22 @@ $jsonld = [
 
     <section class="block">
       <h2>Their work</h2>
+      <?php $links = array_filter(preg_split('/\s+/', (string)$p['work_links'])); if ($links): ?>
+        <div class="worklinks">
+          <?php foreach ($links as $l):
+            $host = strtolower((string)parse_url($l, PHP_URL_HOST));
+            $yt = null;
+            if (preg_match('#(?:youtube\.com/(?:watch\?v=|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})#', $l, $mm)) $yt = $mm[1];
+            $label = str_contains($host, 'instagram') ? 'Instagram' : (str_contains($host, 'tiktok') ? 'TikTok' : ($yt || str_contains($host, 'youtu') ? 'YouTube' : preg_replace('/^www\./', '', $host)));
+          ?>
+            <?php if ($yt): ?>
+              <button type="button" class="ytcard" data-yt="<?= h($yt) ?>" style="background-image:url('https://i.ytimg.com/vi/<?= h($yt) ?>/hqdefault.jpg')" aria-label="Play YouTube video"><span>▶</span></button>
+            <?php else: ?>
+              <a class="workcard" href="<?= h($l) ?>" target="_blank" rel="nofollow noopener"><b><?= h($label) ?></b><span class="small muted">See the post ↗</span></a>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
       <?php if ($media): ?>
         <div class="gallery">
           <?php foreach ($media as $m): $src = cfg('uploads_url') . '/' . rawurlencode($m['file']); ?>
@@ -105,7 +121,7 @@ $jsonld = [
             </figure>
           <?php endforeach; ?>
         </div>
-      <?php else: ?>
+      <?php elseif (!$links): ?>
         <p class="muted">No photos yet<?= $socialLinks ? ': see their work on ' . implode(' and ', array_map(fn($k) => '<a href="/go/' . $k . '/' . h($p['slug']) . '" rel="nofollow">' . SOCIALS[$k] . '</a>', array_keys($socialLinks))) : '' ?>.</p>
       <?php endif; ?>
     </section>

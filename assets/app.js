@@ -124,6 +124,15 @@
     sync();
   }
 
+  // ---------- YouTube: load the player only when tapped (keeps pages fast, no tracking until then) ----------
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-yt]'); if (!b) return;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(b.dataset.yt) + '?autoplay=1';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true; f.className = 'ytframe'; f.title = 'YouTube video';
+    b.replaceWith(f);
+  });
+
   // ---------- Price table: level tabs + sorting ----------
   var ptable = $('table[data-sortable]');
   if (ptable) {

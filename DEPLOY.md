@@ -9,6 +9,7 @@ Do this only once you're happy with the prototype locally.
 5. **Settings (server only)**: in File Manager, copy `config.local.example.php` to `/home/viorowzb/dive.wheretospot.com/config.local.php` and fill in:
    - `admin_password_hash`: make it with `php -r "echo password_hash('YOUR-PASSWORD', PASSWORD_DEFAULT);"`
    - `admin_email`: gets every inquiry and listing request
+   - `whatsapp_admin`: your WhatsApp number, for the "Sign up on WhatsApp" button
    (`config.local.example.php` is not deployed; copy its contents from GitHub.)
 6. Open `https://dive.wheretospot.com/admin/`, log in, and **remove the sample data** before telling anyone about the site.
 7. Submit `https://dive.wheretospot.com/sitemap.xml` in Google Search Console.

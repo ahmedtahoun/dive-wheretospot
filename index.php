@@ -31,8 +31,12 @@ switch (true) {
     case (bool)preg_match('#^/badge/([a-z0-9-]+)\.svg$#', $path, $m):          badge_svg($m[1]); break;
     case $path === '/widget/today':              widget_today(); break;
     case $path === '/sitemap.xml':               sitemap(); break;
-    case $path === '/robots.txt':                header('Content-Type: text/plain'); echo "User-agent: *\nDisallow: /admin\nDisallow: /go/\nSitemap: " . abs_url('/sitemap.xml') . "\n"; break;
+    case $path === '/robots.txt':                header('Content-Type: text/plain'); echo "User-agent: *\nDisallow: /admin\nDisallow: /go/\nDisallow: /me/\nSitemap: " . abs_url('/sitemap.xml') . "\n"; break;
     case $path === '/llms.txt':                  llms_txt(); break;
+    case (bool)preg_match('#^/me/([a-f0-9]{32})(/.*)?$#', $path, $m):
+        require APP_DIR . '/me.php';
+        me_route($m[1], $m[2] ?? '', $method);
+        break;
     case $path === '/admin' || str_starts_with($path, '/admin/'):
         require APP_DIR . '/admin.php';
         admin_route(substr($path, 6) ?: '/', $method);
