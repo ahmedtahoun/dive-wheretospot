@@ -75,6 +75,13 @@ function migrate(PDO $pdo): void {
         'cert_number' => "TEXT DEFAULT ''",
         'cert_file' => "TEXT DEFAULT ''",
         'work_links' => "TEXT DEFAULT ''",
+        'specialties' => "TEXT DEFAULT ''",
+        'styles' => "TEXT DEFAULT ''",
+        'formats' => "TEXT DEFAULT ''",
+        'months' => "TEXT DEFAULT ''",
+        'extras' => "TEXT DEFAULT ''",
+        'min_age' => "INTEGER DEFAULT 0",
+        'coach_depth' => "INTEGER DEFAULT 0",
     ];
     foreach ($add as $c => $def) if (!in_array($c, $cols, true)) $pdo->exec("ALTER TABLE providers ADD COLUMN $c $def");
     $mcols = array_column($pdo->query('PRAGMA table_info(media)')->fetchAll(), 'name');
@@ -201,6 +208,46 @@ const SERVICE_CATS = [
 const AGENCIES = ['AIDA', 'Molchanovs', 'SSI', 'PADI', 'CMAS'];
 const LANGS = ['English', 'Arabic', 'Russian', 'German', 'French', 'Italian', 'Spanish', 'Ukrainian', 'Polish'];
 const SOCIALS = ['instagram' => 'Instagram', 'tiktok' => 'TikTok', 'youtube' => 'YouTube', 'facebook' => 'Facebook', 'website' => 'Website'];
+
+// What a provider is good at, and the needs a diver can have. Used on profiles, the directory and the matcher.
+const SPECIALTIES = [
+    'first_timers' => ['Nervous beginners', 'Patient with people who are new to the water or a bit scared.'],
+    'equalisation' => ['Equalisation', 'Fixes ear problems: Frenzel, hands-free, mouthfill.'],
+    'depth'        => ['Depth 40 m+', 'Coaches deep dives on the line, past 40 m.'],
+    'competition'  => ['Competition prep', 'Trains athletes for competitions and records.'],
+    'pool'         => ['Pool: static & dynamic', 'Breath-hold and distance training in the pool.'],
+    'relaxation'   => ['Relaxation & breathing', 'Breathwork, relaxation and the mental side.'],
+    'safety'       => ['Safety & rescue', 'Safety-diver and rescue skills.'],
+    'photo'        => ['Underwater photo & video', 'Films or photographs your dives.'],
+    'kids'         => ['Kids & teens', 'Teaches children and teenagers.'],
+    'women'        => ['Female instructor', 'A female instructor can teach you.'],
+    'yoga'         => ['Yoga & stretching', 'Stretching and yoga made for freedivers.'],
+    'scuba_cross'  => ['Scuba divers', 'Helps scuba divers switch to freediving.'],
+];
+const STYLES = ['calm' => 'Calm & patient', 'technical' => 'Technical & detailed', 'fun' => 'Fun & social', 'performance' => 'Performance-focused'];
+const FORMATS = ['private' => 'Private (1 student)', 'small' => 'Small group (2–3)', 'group' => 'Group (4+)'];
+const EXTRAS = [
+    'video' => 'Video of your dives', 'flex' => 'Start any day', 'online_theory' => 'Theory online before you arrive',
+    'pickup' => 'Hotel pickup', 'card' => 'Pay by card', 'gear_sizes' => 'Gear in all sizes', 'adaptive' => 'Adaptive freediving (disabilities)',
+];
+const MONTHS = [1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Aug', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'];
+
+// "Oct–May" style summary of the months someone teaches in Dahab. Empty = all year.
+function months_label(string $csv): string {
+    $m = array_map('intval', csv_list($csv));
+    if (!$m || count($m) === 12) return 'All year';
+    sort($m);
+    // find the longest wrap-around run to print as a range
+    $set = array_flip($m); $runs = [];
+    foreach ($m as $start) {
+        if (isset($set[$start === 1 ? 12 : $start - 1])) continue;
+        $len = 0; $x = $start;
+        while (isset($set[$x])) { $len++; $x = $x % 12 + 1; if ($len > 12) break; }
+        $runs[] = [$start, $len];
+    }
+    if (!$runs) return 'All year';
+    return implode(', ', array_map(fn($r) => $r[1] === 1 ? MONTHS[$r[0]] : MONTHS[$r[0]] . '–' . MONTHS[($r[0] + $r[1] - 2) % 12 + 1], $runs));
+}
 
 function spots(): array {
     static $s = null;

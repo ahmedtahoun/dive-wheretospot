@@ -1,7 +1,7 @@
 <section class="pagehead slim">
   <div class="wrap">
     <h1>Freediving schools & coaches in Dahab</h1>
-    <p class="lead">Filter by what you want to learn, tick up to 4 to compare.</p>
+    <p class="lead">Filter by what you want to learn, tick up to 4 to compare. Not sure? <a href="/en/match">Find my match in 1 minute →</a></p>
   </div>
 </section>
 
@@ -16,6 +16,8 @@
       <button type="button" data-v="fun">Fun dives</button>
     </div>
     <div class="fbar-row">
+      <label class="fsel"><span class="sr-only">Good for</span>
+        <select data-fsel="spec"><option value="">Good for…</option><?php foreach (SPECIALTIES as $k => [$label]): ?><option value="<?= $k ?>"><?= h($label) ?></option><?php endforeach; ?></select></label>
       <label class="fsel"><span class="sr-only">Language</span>
         <select data-fsel="lang"><option value="">Any language</option><?php foreach (LANGS as $l): ?><option><?= h($l) ?></option><?php endforeach; ?></select></label>
       <label class="fsel"><span class="sr-only">Agency</span>

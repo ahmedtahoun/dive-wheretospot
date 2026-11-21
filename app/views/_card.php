@@ -14,7 +14,7 @@ $url = '/en/p/' . h($p['slug']);
   data-spots="<?= h($p['spots']) ?>" data-levels="<?= h(implode(',', $levels)) ?>" data-cats="<?= h(implode(',', $cats)) ?>"
   data-week="<?= (int)$p['teaching_week'] ?>" data-verified="<?= (int)$p['verified'] ?>"
   data-price="<?= $beg ? (float)$beg['price_eur'] : 99999 ?>" data-ratio="<?= (int)$p['max_ratio'] ?: 99 ?>"
-  data-name="<?= h($p['name']) ?>" data-slug="<?= h($p['slug']) ?>">
+  data-spec="<?= h($p['specialties']) ?>" data-name="<?= h($p['name']) ?>" data-slug="<?= h($p['slug']) ?>">
   <a class="pcard-media" href="<?= $url ?>" tabindex="-1" aria-hidden="true" style="--h:<?= avatar_hue($p['name']) ?>">
     <?php if ($cover): ?><img src="<?= h(img_src($cover, 640)) ?>" alt="" loading="lazy"><?php else: ?><span class="pcard-initials"><?= h(initials($p['name'])) ?></span><?php endif; ?>
     <?php if ($p['featured']): ?><span class="tag tag-feat">Featured</span><?php endif; ?>
@@ -27,6 +27,9 @@ $url = '/en/p/' . h($p['slug']);
   <div class="pcard-body">
     <h3><a href="<?= $url ?>"><?= h($p['name']) ?></a><?php if ($p['verified']): ?> <span class="vtick" title="Certificate verified" aria-label="Verified">✓</span><?php endif; ?></h3>
     <p class="pcard-meta"><?= h(PROVIDER_TYPES[$p['type']] ?? '') ?><?= $p['base_area'] ? ' · ' . h($p['base_area']) : '' ?></p>
+    <?php $best = array_slice(array_filter(csv_list($p['specialties']), fn($k) => isset(SPECIALTIES[$k])), 0, 2); if ($best): ?>
+      <p class="pcard-best">Best for <?= h(implode(' · ', array_map(fn($k) => SPECIALTIES[$k][0], $best))) ?></p>
+    <?php endif; ?>
     <p class="pcard-line"><?= h(str_replace(',', ' · ', $p['agencies'])) ?><?= $p['languages'] ? '<span class="sep"></span>' . h(short_langs($p['languages'])) : '' ?></p>
     <p class="pcard-price"><?php if ($beg): ?>Beginner course <b><?= money((float)$beg['price_eur']) ?></b><?php elseif ($from): ?>From <b><?= money($from) ?></b><?php else: ?><span class="muted">Ask for prices</span><?php endif; ?></p>
   </div>

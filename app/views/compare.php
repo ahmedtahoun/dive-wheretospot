@@ -28,6 +28,10 @@
     $best = null; foreach ($p['_svc'] as $s) if ($s['category'] === 'coaching' && (float)$s['days'] <= 1 && (!$best || $s['price_eur'] < $best['price_eur'])) $best = $s;
     return $best ? ['<b>' . money((float)$best['price_eur']) . '</b><br><span class="muted small">' . h($best['title']) . '</span>', (float)$best['price_eur']] : ['<span class="muted">—</span>', null];
   }];
+  $rows[] = ['Best for', fn($p) => [h(implode(', ', array_map(fn($k) => SPECIALTIES[$k][0] ?? $k, csv_list($p['specialties'])))) ?: '—', null]];
+  $rows[] = ['Teaching style', fn($p) => [h(implode(' · ', array_map(fn($k) => STYLES[$k] ?? $k, csv_list($p['styles'])))) ?: '—', null]];
+  $rows[] = ['Teaches', fn($p) => [h(implode(' · ', array_map(fn($k) => FORMATS[$k] ?? $k, csv_list($p['formats'])))) ?: '—', null]];
+  $rows[] = ['In Dahab', fn($p) => [h(months_label($p['months'])), null]];
   $rows[] = ['Max students per instructor', fn($p) => [$p['max_ratio'] ? (int)$p['max_ratio'] : '—', $p['max_ratio'] ? (int)$p['max_ratio'] : null]];
   $rows[] = ['Training pool', fn($p) => [$p['pool'] ? 'Yes' : 'No', null]];
   $rows[] = ['Gear included in courses', fn($p) => [$p['gear_included'] ? 'Yes' : 'Ask', null]];

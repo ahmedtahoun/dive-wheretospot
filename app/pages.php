@@ -236,7 +236,7 @@ function upcoming_events(int $limit): array {
 
 function sitemap(): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = ['/en/', '/en/freediving', '/en/prices', '/en/today', '/en/spots', '/en/join'];
+    $urls = ['/en/', '/en/freediving', '/en/match', '/en/prices', '/en/today', '/en/spots', '/en/join'];
     foreach (array_keys(spots()) as $s) $urls[] = '/en/spots/' . $s;
     foreach (q("SELECT slug FROM providers WHERE status = 'approved' AND is_sample = 0")->fetchAll() as $p) $urls[] = '/en/p/' . $p['slug'];
     echo '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';

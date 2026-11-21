@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/app/bootstrap.php';
 require APP_DIR . '/conditions.php';
 require APP_DIR . '/pages.php';
+require APP_DIR . '/match.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path = '/' . trim(rawurldecode($path), '/');
@@ -20,6 +21,8 @@ switch (true) {
     case $path === '/en/compare':                page_compare(); break;
     case $path === '/en/prices':                 page_prices(); break;
     case $path === '/en/today':                  page_today(); break;
+    case $path === '/en/match':                  page_match(); break;
+    case $path === '/en/match/ask':              $method === 'POST' ? post_match_ask() : redirect('/en/match'); break;
     case $path === '/en/spots':                  page_spots(); break;
     case $path === '/en/join':                   $method === 'POST' ? post_join() : page_join(); break;
     case $path === '/en/privacy':                render('privacy', ['title' => 'Privacy & terms', 'desc' => 'How Where To Spot Dive handles your data, and what we are (and are not) responsible for.']); break;

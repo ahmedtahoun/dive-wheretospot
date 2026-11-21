@@ -33,6 +33,13 @@ function save_profile(int $id, array $post, bool $admin): void {
         'work_links' => implode("\n", array_slice(array_unique($links), 0, 6)),
         'cert_agency' => in_array($post['cert_agency'] ?? '', AGENCIES, true) ? $post['cert_agency'] : '',
         'cert_number' => $f('cert_number', 60),
+        'specialties' => implode(',', array_slice(array_values(array_intersect((array)($post['specialties'] ?? []), array_keys(SPECIALTIES))), 0, 6)),
+        'styles' => implode(',', array_slice(array_values(array_intersect((array)($post['styles'] ?? []), array_keys(STYLES))), 0, 2)),
+        'formats' => $pick('formats', array_keys(FORMATS)),
+        'extras' => $pick('extras', array_keys(EXTRAS)),
+        'months' => implode(',', array_values(array_intersect(array_map('intval', (array)($post['months'] ?? [])), array_keys(MONTHS)))),
+        'min_age' => max(0, min(18, (int)($post['min_age'] ?? 0))),
+        'coach_depth' => max(0, min(150, (int)($post['coach_depth'] ?? 0))),
     ];
     if ($admin) {
         $slug = slugify($f('slug', 80) ?: $set['name']);

@@ -28,7 +28,7 @@ $head = '<link rel="preload" as="image" href="' . h(img_src('photo-1628630500614
       </label>
       <button class="btn btn-coral" type="submit">Find</button>
     </form>
-    <p class="hero-note"><?= $count ?> schools & coaches · <?= count($teaching) ?> teaching this week</p>
+    <p class="hero-note"><?= $count ?> schools & coaches · <?= count($teaching) ?> teaching this week · <a href="/en/match">Not sure? Find my match →</a></p>
   </div>
   <p class="photo-credit"><?= unsplash_credit('sandbarproductions') ?></p>
 </section>

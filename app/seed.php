@@ -174,6 +174,19 @@ function seed_sample_data(PDO $pdo): void {
     $mi = $pdo->prepare("INSERT INTO media (provider_id, file, kind, caption, spot, status, credit) VALUES (?, ?, 'photo', ?, ?, 'approved', ?)");
 
     $pid = fn($slug) => (int)$pdo->query('SELECT id FROM providers WHERE slug = ' . $pdo->quote($slug))->fetchColumn();
+    // Skills and fit for the matcher: specialties, styles, formats, months in Dahab (empty = all year), extras, min age, coach depth.
+    $skills = [
+        'saddle-line-freediving' => ['first_timers,equalisation,relaxation,safety', 'calm,technical', 'small,private', '', 'video,flex,card,online_theory', 12, 40],
+        'coach-lina-r'           => ['depth,competition,equalisation,women', 'performance,technical', 'private,small', '9,10,11,12,1,2,3,4,5', 'video', 16, 90],
+        'blue-rim-freedivers'    => ['first_timers,pool,kids,safety,women', 'calm,fun', 'small,group', '', 'flex,card,pickup,gear_sizes,online_theory', 10, 30],
+        'reef-and-breath'        => ['first_timers,relaxation,yoga', 'fun,calm', 'small,group', '', 'flex', 14, 30],
+        'omar-h-freelance'       => ['first_timers,photo,scuba_cross', 'fun,calm', 'private,small', '10,11,12,1,2,3,4,5,6', 'video,pickup', 12, 30],
+        'sand-dune-divers'       => ['scuba_cross,kids,pool', 'fun', 'group,small', '', 'card,pickup,gear_sizes', 10, 20],
+        'coach-yuri-v'           => ['equalisation,depth,pool', 'technical', 'private', '10,11,12,1,2,3,4', 'video,online_theory', 16, 60],
+    ];
+    $sk = $pdo->prepare('UPDATE providers SET specialties = ?, styles = ?, formats = ?, months = ?, extras = ?, min_age = ?, coach_depth = ? WHERE slug = ?');
+    foreach ($skills as $slug => $v) $sk->execute([...$v, $slug]);
+
     foreach ($media as $slug => $items) foreach ($items as [$file, $credit, $cap, $spot]) $mi->execute([$pid($slug), $file, $cap, $spot, $credit]);
 
     $ev = $pdo->prepare('INSERT INTO events (provider_id,title,kind,starts_on,ends_on,description,is_sample) VALUES (?,?,?,?,?,?,1)');

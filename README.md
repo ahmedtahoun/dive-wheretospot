@@ -9,6 +9,7 @@ Plain PHP 8 + SQLite, no framework and no build step. Runs on the same Namecheap
 | Page | URL | What it does |
 |---|---|---|
 | Home | `/en/` | Quick finder, today's conditions, Blue Hole teaser, featured, teaching this week, events, depth ladder |
+| Find my match | `/en/match` | 4-step quiz (level, goal, needs like "nervous" or "female instructor", language/month/budget). Scores every provider as the share of the diver's asks they meet, explains each score (✓ / –), and sends one request to the top 3 (`/en/match/ask`) with the diver's needs attached |
 | Directory | `/en/freediving` | Filters (level, type, agency, language, spot, this week, verified) kept in the URL, sorting, tick up to 4 to compare |
 | Compare | `/en/compare?p=a,b,c` | Side-by-side table with the best value in each row highlighted |
 | Provider profile | `/en/p/{slug}` | Courses and prices, achievements, photos and videos (tagged by spot), socials, events, inquiry form |
@@ -20,6 +21,8 @@ Plain PHP 8 + SQLite, no framework and no build step. Runs on the same Namecheap
 | Join | `/en/join` | 1-minute sign-up (or "Sign up on WhatsApp"), then the provider gets their private page straight away |
 | Provider's private page | `/me/{token}` | No password: the link is the login. Edit profile, courses (one-tap presets) and prices, certificate number + card photo, social links and best posts, photos/videos with spot tags, events, "teaching this week" (auto-off after 7 days), views/clicks/inquiries for 30 days, replies to inquiries |
 | Admin | `/admin/` | Approve, verify (with the certificate claimed + card photo), feature, private link (send on WhatsApp / replace), photo queue, weekly WhatsApp check, inquiries, events, remove sample data |
+
+Providers also fill in "What you're best at": up to 6 specialties (`SPECIALTIES` in `app/bootstrap.php`), teaching style, private/small/group, extras (video, pickup, card…), months in Dahab, youngest age and coaching depth. It feeds the matcher, the "Best for" block on profiles, the "Good for…" filter and the compare table. Scoring lives in `app/match.php`.
 
 Photos from verified providers publish straight away; others wait in Admin → Photos to check. If a verified provider changes their instructor number, the badge switches off until you check again.
 

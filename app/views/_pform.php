@@ -41,6 +41,38 @@ for ($i = 0; $i < 3; $i++) $rows[] = ['category' => 'course', 'level' => 1, 'age
 </div>
 <label>Experience & achievements <span class="muted small">(one per line)</span><textarea name="achievements" rows="3" maxlength="2000" placeholder="AIDA Instructor&#10;Safety diver at Blue Hole competitions"><?= $v('achievements') ?></textarea></label>
 
+<h2 id="skills">What you're best at</h2>
+<p class="muted small">This is how divers find the right teacher: our "Find my match" quiz uses it, and it shows on your profile as "Best for".</p>
+<fieldset><legend>Your specialties <span class="muted small">(up to 6)</span></legend>
+  <div class="checks skills-checks" data-max="6">
+    <?php foreach (SPECIALTIES as $k => [$label, $hint]): ?><label class="check" title="<?= h($hint) ?>"><input type="checkbox" name="specialties[]" value="<?= $k ?>"<?= $chk('specialties', $k) ?>> <?= h($label) ?></label><?php endforeach; ?>
+  </div>
+</fieldset>
+<fieldset><legend>Your teaching style <span class="muted small">(up to 2)</span></legend>
+  <div class="checks" data-max="2"><?php foreach (STYLES as $k => $label): ?><label class="check"><input type="checkbox" name="styles[]" value="<?= $k ?>"<?= $chk('styles', $k) ?>> <?= h($label) ?></label><?php endforeach; ?></div>
+</fieldset>
+<fieldset><legend>How you teach</legend>
+  <div class="checks"><?php foreach (FORMATS as $k => $label): ?><label class="check"><input type="checkbox" name="formats[]" value="<?= $k ?>"<?= $chk('formats', $k) ?>> <?= h($label) ?></label><?php endforeach; ?></div>
+</fieldset>
+<fieldset><legend>Extras you offer</legend>
+  <div class="checks"><?php foreach (EXTRAS as $k => $label): ?><label class="check"><input type="checkbox" name="extras[]" value="<?= $k ?>"<?= $chk('extras', $k) ?>> <?= h($label) ?></label><?php endforeach; ?></div>
+</fieldset>
+<fieldset><legend>Months you teach in Dahab <span class="muted small">(leave all empty if you're here all year)</span></legend>
+  <div class="checks months"><?php foreach (MONTHS as $n => $label): ?><label class="check"><input type="checkbox" name="months[]" value="<?= $n ?>"<?= $chk('months', (string)$n) ?>> <?= $label ?></label><?php endforeach; ?></div>
+</fieldset>
+<div class="row2">
+  <label>Youngest student you teach <span class="muted small">(age, 0 = no limit)</span><input type="number" name="min_age" min="0" max="18" value="<?= (int)$p['min_age'] ?>"></label>
+  <label>Deepest you coach students to <span class="muted small">(metres)</span><input type="number" name="coach_depth" min="0" max="150" value="<?= (int)$p['coach_depth'] ?>"></label>
+</div>
+<script>
+// Limit "up to N" checkbox groups.
+document.querySelectorAll('.checks[data-max]').forEach(function (g) {
+  var max = +g.dataset.max;
+  function sync() { var n = g.querySelectorAll('input:checked').length; g.querySelectorAll('input').forEach(function (i) { i.disabled = !i.checked && n >= max; }); }
+  g.addEventListener('change', sync); sync();
+});
+</script>
+
 <h2 id="cert">Your certificate</h2>
 <p class="muted small">We check this on the agency's public instructor list, then switch on your <b>✓ Verified</b> badge.</p>
 <div class="row2">

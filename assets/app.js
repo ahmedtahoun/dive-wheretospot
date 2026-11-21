@@ -12,9 +12,9 @@
   var list = $('[data-list]');
   if (list) {
     var cards = $$('.pcard', list);
-    var state = { level: [], type: [], agency: [], lang: [], spot: [], week: false, verified: false };
+    var state = { level: [], type: [], agency: [], lang: [], spot: [], spec: [], week: false, verified: false };
     var params = new URLSearchParams(location.search);
-    ['level', 'type', 'agency', 'lang', 'spot'].forEach(function (k) {
+    ['level', 'type', 'agency', 'lang', 'spot', 'spec'].forEach(function (k) {
       var v = params.get(k);
       if (v) state[k] = v.split(',');
     });
@@ -35,7 +35,7 @@
         if (!ok) return false;
       }
       if (state.type.length && state.type.indexOf(d.type) === -1) return false;
-      if (!anyOf(d.agencies, state.agency) || !anyOf(d.langs, state.lang) || !anyOf(d.spots, state.spot)) return false;
+      if (!anyOf(d.agencies, state.agency) || !anyOf(d.langs, state.lang) || !anyOf(d.spots, state.spot) || !anyOf(d.spec, state.spec)) return false;
       if (state.week && d.week !== '1') return false;
       if (state.verified && d.verified !== '1') return false;
       return true;
@@ -53,7 +53,7 @@
       $$('[data-flag]').forEach(function (i) { i.checked = !!state[i.dataset.flag]; });
       $$('select[data-fsel]').forEach(function (sel) { sel.value = state[sel.dataset.fsel][0] || ''; sel.classList.toggle('on', !!sel.value); });
       var q = new URLSearchParams();
-      ['level', 'type', 'agency', 'lang', 'spot'].forEach(function (k) { if (state[k].length) q.set(k, state[k].join(',')); });
+      ['level', 'type', 'agency', 'lang', 'spot', 'spec'].forEach(function (k) { if (state[k].length) q.set(k, state[k].join(',')); });
       if (state.week) q.set('week', '1');
       if (state.verified) q.set('verified', '1');
       var qs = q.toString();
@@ -72,7 +72,7 @@
     $$('[data-flag]').forEach(function (i) { i.addEventListener('change', function () { state[i.dataset.flag] = i.checked; apply(); }); });
     $$('select[data-fsel]').forEach(function (sel) { sel.addEventListener('change', function () { state[sel.dataset.fsel] = sel.value ? [sel.value] : []; apply(); }); });
     $$('[data-reset]').forEach(function (b) {
-      b.addEventListener('click', function () { state = { level: [], type: [], agency: [], lang: [], spot: [], week: false, verified: false }; apply(); });
+      b.addEventListener('click', function () { state = { level: [], type: [], agency: [], lang: [], spot: [], spec: [], week: false, verified: false }; apply(); });
     });
 
     var sortSel = $('[data-sort]');

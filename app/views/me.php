@@ -8,6 +8,7 @@ $checks = [
   ['Courses with prices', count($priced) > 0, '#courses'],
   ['Languages and agencies', $p['languages'] !== '' && $p['agencies'] !== '', '#profile'],
   ['Where you teach', $p['spots'] !== '', '#profile'],
+  ['What you\'re best at (specialties)', $p['specialties'] !== '', '#skills'],
   ['Instructor number', $p['cert_number'] !== '', '#cert'],
   ['At least 3 photos or videos', count($media) >= 3, '#media'],
   ['Instagram, TikTok, YouTube or website', (bool)($p['instagram'] || $p['tiktok'] || $p['youtube'] || $p['website']), '#social'],

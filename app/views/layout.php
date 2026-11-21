@@ -2,6 +2,7 @@
 $fullTitle = ($title ?? '') ? $title . ' · Where To Spot Dive' : 'Where To Spot Dive';
 $reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $nav = [
+  '/en/match' => 'Find my match',
   '/en/freediving' => 'Schools & coaches',
   '/en/spots' => 'Spots',
   '/en/today' => 'Today',

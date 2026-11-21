@@ -54,6 +54,32 @@ $jsonld = [
       <div><dt>Pool</dt><dd><?= $p['pool'] ? 'Yes' : 'No' ?></dd></div>
     </dl>
 
+    <?php
+      $spec = array_filter(csv_list($p['specialties']), fn($k) => isset(SPECIALTIES[$k]));
+      $sty = array_filter(csv_list($p['styles']), fn($k) => isset(STYLES[$k]));
+      $fmt = array_filter(csv_list($p['formats']), fn($k) => isset(FORMATS[$k]));
+      $ext = array_filter(csv_list($p['extras']), fn($k) => isset(EXTRAS[$k]));
+    ?>
+    <?php if ($spec || $sty || $fmt || $ext): ?>
+    <section class="block fit" id="fit">
+      <h2>Best for</h2>
+      <?php if ($spec): ?>
+        <ul class="fit-spec">
+          <?php foreach ($spec as $k): ?><li><b><?= h(SPECIALTIES[$k][0]) ?></b><span><?= h(SPECIALTIES[$k][1]) ?></span></li><?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+      <dl class="fit-facts">
+        <?php if ($sty): ?><div><dt>Teaching style</dt><dd><?= h(implode(' · ', array_map(fn($k) => STYLES[$k], $sty))) ?></dd></div><?php endif; ?>
+        <?php if ($fmt): ?><div><dt>Teaches</dt><dd><?= h(implode(' · ', array_map(fn($k) => FORMATS[$k], $fmt))) ?></dd></div><?php endif; ?>
+        <div><dt>In Dahab</dt><dd><?= h(months_label($p['months'])) ?></dd></div>
+        <?php if ($p['min_age']): ?><div><dt>Ages</dt><dd><?= (int)$p['min_age'] ?>+</dd></div><?php endif; ?>
+        <?php if ($p['coach_depth']): ?><div><dt>Coaches you to</dt><dd><?= (int)$p['coach_depth'] ?> m</dd></div><?php endif; ?>
+      </dl>
+      <?php if ($ext): ?><ul class="ticks fit-extras"><?php foreach ($ext as $k): ?><li><?= h(EXTRAS[$k]) ?></li><?php endforeach; ?></ul><?php endif; ?>
+      <p class="small"><a href="/en/match">Not sure they're right for you? Take the 1-minute match quiz →</a></p>
+    </section>
+    <?php endif; ?>
+
     <section class="block" id="prices">
       <h2>Courses & prices</h2>
       <?php if (!$svc): ?><p class="muted">Prices coming soon. Ask on WhatsApp.</p><?php endif; ?>
